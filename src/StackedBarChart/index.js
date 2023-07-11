@@ -44,6 +44,7 @@ const StackedBarChart = ({
     circleRadius = 5,
     axisWidth = 2,
     axisFontSize = 10,
+    axisFontFamily,
     barWidth = 30,
     line_chart_width = 2,
     showTooltip = false,
@@ -54,14 +55,14 @@ const StackedBarChart = ({
     onPressItem = (item) => { }, //set showTooltipPopup to false
     onPressLineItem = (item) => { }, //set showTooltipPopup to false
     // chartData = [
-    //     { month: 'Jan', barValue: 150},
-    //     { month: 'Feb', barValue: 450},
-    //     { month: 'Mar', barValue: 600},
+    //     { month: 'Jan', barValue: 150},
+    //     { month: 'Feb', barValue: 450},
+    //     { month: 'Mar', barValue: 600},
     // ],
     // chartData = [
-    //     { month: 'Jan', lineValue: 100 },
-    //     { month: 'Feb', lineValue: 250 },
-    //     { month: 'Mar', lineValue: 500 },
+    //     { month: 'Jan', lineValue: 100 },
+    //     { month: 'Feb', lineValue: 250 },
+    //     { month: 'Mar', lineValue: 500 },
     // ],
     chartData = [
         { month: 'Jan', barValue: 150, stackedSecondaryBarValue: 100, lineValue: 100 },
@@ -124,13 +125,13 @@ const StackedBarChart = ({
             maxValue = stackedBarMaxValue
         }
     }
-    else if(chartType === ChartType.LINE){
+    else if (chartType === ChartType.LINE) {
         maxValue = Math.max.apply(
             Math,
             chartData?.map((item) => item.lineValue),
         );
     }
-    else{
+    else {
 
     }
     const y2maxValue = Math.max.apply(
@@ -279,6 +280,7 @@ const StackedBarChart = ({
                         fill={axisFontColor}
                         textAnchor="middle"
                         fontSize={axisFontSize}
+                        fontFamily={axisFontFamily}
                     // opacity={animated_axis_tick_circle_opacity}
                     >
                         {item?.month}
@@ -338,6 +340,7 @@ const StackedBarChart = ({
                         fill={axisFontColor}
                         textAnchor="end"
                         fontSize={axisFontSize}
+                        fontFamily={axisFontFamily}
                     // opacity={animated_axis_tick_circle_opacity}
                     >
                         {yValue}
@@ -396,6 +399,7 @@ const StackedBarChart = ({
                         fill={axisFontColor}
                         // textAnchor="end"
                         fontSize={axisFontSize}
+                        fontFamily={axisFontFamily}
                     >
                         {yValue}
                     </SvgText>
@@ -581,6 +585,7 @@ const StackedBarChart = ({
                         x={x_point_x_axis_tick}
                         y={y_axis_y2_point - height - 10 - 2}
                         fontSize={axisFontSize}
+                        fontFamily={axisFontFamily}
                         fill={barchartColor}
                         textAnchor="middle"
                         opacity={animated_axis_tick_circle_opacity}>
