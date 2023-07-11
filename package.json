@@ -1,0 +1,19 @@
+{
+  "name": "@tanmaya_pradhan/react-native-charts",
+  "version": "0.0.1",
+  "description": "svg charts",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "tanmaya pradhan",
+  "homepage": "https://github.com/TanmayaPradhan/charts",
+  "bugs": {
+    "url": "https://github.com/TanmayaPradhan/charts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TanmayaPradhan/charts.git"
+  },
+  "license": "ISC"
+}
