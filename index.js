@@ -1,2 +1,1 @@
-import StackedBarChart from './src/StackedBarChart'
-export default StackedBarChart;
+export {default as StackedBarChart} from './src/StackedBarChart'
