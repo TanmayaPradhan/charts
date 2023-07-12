@@ -56,6 +56,7 @@
 | Parameter | Type     | Description                       |
 | :-------- | :------- | :-------------------------------- |
 | `containerHeight`      | `integer` | chart height |
+| `containerWidth`      | `integer` | chart width |
 | `chartType`      | `string` | all, barchart, stack_barchart, linechart |
 | `backgroundColor`      | `string` | background color |
 | `axisColor`      | `string` | axis color|
@@ -73,6 +74,7 @@
 | `circleRadius`      | `integer` | all circle radius |
 | `axisWidth`      | `integer` | x,y axis width |
 | `axisFontSize`      | `integer` | x,y axis font size |
+| `axisFontFamily`      | `string` | x,y axis font family |
 | `barWidth`      | `integer` | bar chart width |
 | `line_chart_width`      | `integer` | line chart width |
 | `showTooltip`      | `boolean` | show tooltip on the chart |

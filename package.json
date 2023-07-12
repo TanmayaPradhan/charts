@@ -1,6 +1,6 @@
 {
   "name": "@tanmaya_pradhan/react-native-charts",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "svg charts",
   "main": "index.js",
   "scripts": {

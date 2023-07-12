@@ -11,7 +11,6 @@ import {
 } from 'react-native';
 import Svg, { G, Line, Circle, Rect, Text as SvgText, Path } from 'react-native-svg';
 
-const winow_width = Dimensions.get('window').width;
 const AnimatedLine = Animated.createAnimatedComponent(Line);
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 const AnimatedRect = Animated.createAnimatedComponent(Rect);
@@ -27,6 +26,7 @@ export const ChartType = {
 }
 const StackedBarChart = ({
     containerHeight = 400,
+    containerWidth = Dimensions.get('window').width,
     backgroundColor = '#000',
     axisColor = '#9cc',
     showAxisTicks = true,
@@ -91,10 +91,10 @@ const StackedBarChart = ({
             gap_between_x_axis_ticks * chartData?.length;
         scrollWidth = x_axis_x2_point + circleRadius;
     } else {
-        x_axis_x2_point = winow_width - padding_from_screen - marginRight_for_y2_axis;
-        x_axis_width = winow_width - padding_from_screen - marginLeft_for_y_axis - marginRight_for_y2_axis;
+        x_axis_x2_point = containerWidth - padding_from_screen - marginRight_for_y2_axis;
+        x_axis_width = containerWidth - padding_from_screen - marginLeft_for_y_axis - marginRight_for_y2_axis;
         gap_between_x_axis_ticks = x_axis_width / (chartData.length + 1);
-        scrollWidth = winow_width;
+        scrollWidth = containerWidth;
     }
 
     const y_axis_x1_point = marginLeft_for_y_axis;
