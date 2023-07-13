@@ -21,7 +21,6 @@ const AnimatedPath = Animated.createAnimatedComponent(Path);
 export const ChartType = {
     ALL: 'all',
     BAR: 'barchart',
-    STACK_BAR: 'stack_barchart',
     LINE: 'linechart'
 }
 const StackedBarChart = ({
@@ -37,9 +36,7 @@ const StackedBarChart = ({
     y2Axis = true, // if only single chart. set to false
     circleColor = '#DAA520',
     axisFontColor = '#fff',
-    barchartColor = '#73ff00',
     chartType = ChartType.ALL,
-    stackedSecondaryBarColor = '#ccc',
     lineColor = '#DAA520',
     circleRadius = 5,
     axisWidth = 2,
@@ -47,28 +44,22 @@ const StackedBarChart = ({
     axisFontFamily,
     barWidth = 30,
     line_chart_width = 2,
-    showTooltip = false,
+    show_barchart_tooltips = true,
+    barchart_tooltip_axis_color = '#fff',
+    barchart_tooltip_color = '#fff',
     showTooltipPopup = true,
     toolTipContainerStyle,
     toolTipTextStyle,
     scrollEnable = false,
     onPressItem = (item) => { }, //set showTooltipPopup to false
     onPressLineItem = (item) => { }, //set showTooltipPopup to false
-    // chartData = [
-    //     { month: 'Jan', barValue: 150},
-    //     { month: 'Feb', barValue: 450},
-    //     { month: 'Mar', barValue: 600},
-    // ],
-    // chartData = [
-    //     { month: 'Jan', lineValue: 100 },
-    //     { month: 'Feb', lineValue: 250 },
-    //     { month: 'Mar', lineValue: 500 },
-    // ],
+    y_axis_label_count = 6,
     chartData = [
-        { month: 'Jan', barValue: 150, stackedSecondaryBarValue: 100, lineValue: 100 },
-        { month: 'Feb', barValue: 450, stackedSecondaryBarValue: 150, lineValue: 250 },
-        { month: 'Mar', barValue: 600, stackedSecondaryBarValue: 100, lineValue: 500 },
+        { month: 'Jan', barValues: [100, 150, 120], lineValue: 125 },
+        { month: 'Feb', barValues: [140, 80, 120], lineValue: 250 },
+        { month: 'Mar', barValues: [70, 150, 90], lineValue: 500 },
     ],
+    chartColors = ['#73ff00', '#9ff', '#f99', '#999']
 }) => {
     const marginLeft_for_y_axis = 50;
     const marginRight_for_y2_axis = 30;
@@ -112,34 +103,20 @@ const StackedBarChart = ({
     const [selectedChartItem, setSelectedChartItem] = useState({})
 
     const minValue = 0;
+    let allBarValues = chartData.map((item) => item.barValues)
+    const newSumOfMaxValues = allBarValues.map((item) => item.reduce((sum, item) => sum + item), 0)
     let maxValue = Math.max.apply(
         Math,
-        chartData?.map((item) => item.barValue),
+        newSumOfMaxValues?.map((item) => item),
     );
-    if (chartType === ChartType.STACK_BAR || chartType === ChartType.ALL) {
-        let stackedBarMaxValue = Math.max.apply(
-            Math,
-            chartData?.map((item) => item.stackedSecondaryBarValue),
-        );
-        if (stackedBarMaxValue > maxValue) {
-            maxValue = stackedBarMaxValue
-        }
-    }
-    else if (chartType === ChartType.LINE) {
-        maxValue = Math.max.apply(
-            Math,
-            chartData?.map((item) => item.lineValue),
-        );
-    }
-    else {
 
-    }
     const y2maxValue = Math.max.apply(
         Math,
         chartData?.map((item) => item.lineValue),
     );
-    const gapBetweenYaxisValues = (maxValue - minValue) / 4;
-    const gapBetweenY2axisValues = (y2maxValue - minValue) / 4;
+    const gapBetweenYaxisValues = (maxValue - minValue) / (y_axis_label_count - 2);
+    const gapBetweenY2axisValues = (y2maxValue - minValue) / (y_axis_label_count - 2);
+    let gap_between_y_axis_ticks = y_axis_height / (y_axis_label_count - 1);
 
     const animated_axis_tick_circle_opacity = useRef(
         new Animated.Value(0),
@@ -155,10 +132,10 @@ const StackedBarChart = ({
 
 
     useEffect(() => {
-        const newLabels = Array.from({ length: 6 }).map(
+        const newLabels = Array.from({ length: y_axis_label_count }).map(
             (_, index) => minValue + gapBetweenYaxisValues * index,
         );
-        const newY2Labels = Array.from({ length: 6 }).map(
+        const newY2Labels = Array.from({ length: y_axis_label_count }).map(
             (_, index) => minValue + gapBetweenY2axisValues * index,
         );
         setYaxisData(newLabels);
@@ -207,11 +184,11 @@ const StackedBarChart = ({
         }).start();
     }, [pathLength]);
 
-    const onPressBarchartItem = (item, type = ChartType.BAR) => {
+    const onPressBarchartItem = (item) => {
         if (showTooltipPopup) {
             const obj = {
                 month: item?.month,
-                value: type === ChartType.BAR ? item?.barValue : item?.stackedSecondaryBarValue
+                value: item?.barValues
             }
             setSelectedChartItem(obj)
             setIsTooltipPopupVisible(true)
@@ -316,7 +293,6 @@ const StackedBarChart = ({
         </G>
     );
     const render_y_axis_ticks_labels = () => {
-        const gap_between_y_axis_ticks = y_axis_height / (yAxisData?.length - 1);
         return yAxisData?.map((item, index) => {
             const y_point_y_axis_ticks =
                 y_axis_y2_point - gap_between_y_axis_ticks * index;
@@ -376,7 +352,6 @@ const StackedBarChart = ({
         </G>
     );
     const render_y2_axis_ticks_labels = () => {
-        const gap_between_y_axis_ticks = y_axis_height / (y2AxisData?.length - 1);
         return y2AxisData?.map((item, index) => {
             const y_point_y_axis_ticks = y_axis_y2_point - gap_between_y_axis_ticks * index;
             const yValue = item + y2AxisSubstring
@@ -410,7 +385,6 @@ const StackedBarChart = ({
     };
 
     const renderGrid = () => {
-        const gap_between_y_axis_ticks = y_axis_height / (yAxisData?.length - 1);
         return yAxisData?.map((item, index) => {
             let x_axis_point_test_gap = x_axis_width / chartData?.length
             let x_point_x_axis_grid = x_axis_x1_point + x_axis_point_test_gap * index;
@@ -447,46 +421,100 @@ const StackedBarChart = ({
         });
     };
     const render_barchart = () => {
-        const gap_between_y_axis_ticks = y_axis_height / (yAxisData?.length - 1);
+        return chartData?.map((item, index) => {
+            let x_point_x_axis_tick =
+                gap_between_x_axis_ticks +
+                x_axis_x1_point +
+                gap_between_x_axis_ticks * index;
+            let prevBarHeight = 0;
+            return item?.barValues?.map((item2, index2) => {
+                prevBarHeight = index2 !== 0 ? prevBarHeight + (item?.barValues[index2 - 1] * gap_between_y_axis_ticks) / gapBetweenYaxisValues : 0;
+                let height = (item2 * gap_between_y_axis_ticks) / gapBetweenYaxisValues;
+                return (
+                    <AnimatedRect
+                        key={`${index}${'rect'}${index2}`}
+                        x={x_point_x_axis_tick - barWidth / 2}
+                        y={x_axis_y1_point - prevBarHeight}
+                        width={barWidth}
+                        height={-height}
+                        fill={chartColors[index2]}
+                        onPress={() => onPressBarchartItem(item, ChartType.BAR)}
+                    />
+                )
+            })
+        })
+    }
+    const render_barchart_tooltips = () => {
+        return chartData?.map((item, index) => {
+            let x_point_x_axis_tick =
+                gap_between_x_axis_ticks +
+                x_axis_x1_point +
+                gap_between_x_axis_ticks * index;
+            let prevBarHeight = 0;
+            return item?.barValues?.map((item2, index2) => {
+                prevBarHeight = index2 !== 0 ? prevBarHeight + (item?.barValues[index2 - 1] * gap_between_y_axis_ticks) / gapBetweenYaxisValues : 0;
+                let isStackBar = item?.barValues?.length > 1
+                let height = isStackBar ? 0 : (item2 * gap_between_y_axis_ticks) / gapBetweenYaxisValues;
+                return (
+                    <G key={`tooltp ${index}`}>
+                        <AnimatedLine
+                            x1={x_point_x_axis_tick}
+                            y1={x_axis_y1_point - prevBarHeight - height}
+                            x2={x_point_x_axis_tick}
+                            y2={x_axis_y1_point - prevBarHeight - height - 10}
+                            strokeWidth={axisWidth}
+                            stroke={barchart_tooltip_axis_color}
+                            opacity={animated_axis_tick_circle_opacity}
+                        />
+                        <AnimatedSvgText
+                            x={x_point_x_axis_tick}
+                            y={x_axis_y1_point - prevBarHeight - height - 10 - 2}
+                            fontSize={axisFontSize}
+                            fill={barchart_tooltip_color}
+                            textAnchor="middle"
+                            opacity={animated_axis_tick_circle_opacity}>
+                            {item2}
+                        </AnimatedSvgText>
+                    </G>
+                )
+            })
+        })
+    }
+    const render_tooltipsDemo = () => {
         return chartData?.map((item, index) => {
             let x_point_x_axis_tick =
                 gap_between_x_axis_ticks +
                 x_axis_x1_point +
                 gap_between_x_axis_ticks * index;
             let height =
-                (item?.barValue * gap_between_y_axis_ticks) / gapBetweenYaxisValues;
-            let isStackedbarVisible = Boolean(chartType === ChartType.STACK_BAR || chartType === ChartType.ALL) && Boolean(item?.stackedSecondaryBarValue)
-            let secondBarHeight = isStackedbarVisible &&
-                (item?.stackedSecondaryBarValue * gap_between_y_axis_ticks) / gapBetweenYaxisValues;
-            let second_bar_y1_point = isStackedbarVisible && -height + x_axis_y1_point - secondBarHeight
-
+                (item?.barValues[0] * gap_between_y_axis_ticks) / gapBetweenYaxisValues;
             return (
-                <G key={`bar chart${index}`}>
-                    <AnimatedRect
-                        x={x_point_x_axis_tick - barWidth / 2}
-                        y={x_axis_y1_point}
-                        height={-height}
-                        width={barWidth}
-                        fill={barchartColor}
-                        onPress={() => onPressBarchartItem(item, ChartType.BAR)}
+                <G key={`tooltp ${index}`}>
+                    <AnimatedLine
+                        x1={x_point_x_axis_tick}
+                        y1={y_axis_y2_point - height}
+                        x2={x_point_x_axis_tick}
+                        y2={y_axis_y2_point - height - 10}
+                        strokeWidth={axisWidth}
+                        stroke={axisColor}
+                        opacity={animated_axis_tick_circle_opacity}
                     />
-                    {isStackedbarVisible && (
-                        <AnimatedRect
-                            x={x_point_x_axis_tick - barWidth / 2}
-                            y={second_bar_y1_point}
-                            height={secondBarHeight}
-                            width={barWidth}
-                            fill={stackedSecondaryBarColor}
-                            onPress={() => onPressBarchartItem(item, ChartType.STACK_BAR)}
-                        />
-                    )}
+                    <AnimatedSvgText
+                        x={x_point_x_axis_tick}
+                        y={y_axis_y2_point - height - 10 - 2}
+                        fontSize={axisFontSize}
+                        fill={'red'}
+                        textAnchor="middle"
+                        opacity={animated_axis_tick_circle_opacity}>
+                        {item?.barValues[0]}
+                    </AnimatedSvgText>
                 </G>
             );
         });
     };
+
     const getDPath = () => {
         let dPath = '';
-        const gap_between_y_axis_ticks = y_axis_height / (y2AxisData?.length - 1);
         const minMaxGap = y2maxValue - minValue;
         const gapBetweenYvalues = minMaxGap / 4;
 
@@ -513,7 +541,6 @@ const StackedBarChart = ({
     };
 
     const render_line_chart_circles = () => {
-        const gap_between_y_axis_ticks = y_axis_height / (y2AxisData?.length - 1);
         const minMaxGap = y2maxValue - minValue;
         const gapBetweenYvalues = minMaxGap / 4;
         const highestValueAtYAxis = y2AxisData[y2AxisData.length - 1];
@@ -561,40 +588,6 @@ const StackedBarChart = ({
         );
     };
 
-    const render_tooltips = () => {
-        const gap_between_y_axis_ticks = y_axis_height / (yAxisData?.length - 1);
-        return chartData?.map((item, index) => {
-            let x_point_x_axis_tick =
-                gap_between_x_axis_ticks +
-                x_axis_x1_point +
-                gap_between_x_axis_ticks * index;
-            let height =
-                (item?.barValue * gap_between_y_axis_ticks) / gapBetweenYaxisValues;
-            return (
-                <G key={`tooltp ${index}`}>
-                    <AnimatedLine
-                        x1={x_point_x_axis_tick}
-                        y1={y_axis_y2_point - height}
-                        x2={x_point_x_axis_tick}
-                        y2={y_axis_y2_point - height - 10}
-                        strokeWidth={axisWidth}
-                        stroke={axisColor}
-                        opacity={animated_axis_tick_circle_opacity}
-                    />
-                    <AnimatedSvgText
-                        x={x_point_x_axis_tick}
-                        y={y_axis_y2_point - height - 10 - 2}
-                        fontSize={axisFontSize}
-                        fontFamily={axisFontFamily}
-                        fill={barchartColor}
-                        textAnchor="middle"
-                        opacity={animated_axis_tick_circle_opacity}>
-                        {item?.barValue}
-                    </AnimatedSvgText>
-                </G>
-            );
-        });
-    };
     return (
         <View style={[styles.container, { height: containerHeight, backgroundColor: backgroundColor }]}>
             <ScrollView
@@ -608,8 +601,8 @@ const StackedBarChart = ({
                         {showGrid && renderGrid()}
                         {render_x_axis()}
                         {render_x_axis_ticks_labels()}
-                        {Boolean(chartType === ChartType.BAR || chartType === ChartType.STACK_BAR || chartType === ChartType.ALL) && render_barchart()}
-                        {showTooltip && render_tooltips()}
+                        {Boolean(chartType === ChartType.BAR || chartType === ChartType.ALL) && render_barchart()}
+                        {Boolean(chartType === ChartType.BAR || chartType === ChartType.ALL) && show_barchart_tooltips && render_barchart_tooltips()}
                         {!scrollEnable && Boolean(yAxisData?.length) && render_y_axis()}
                         {!scrollEnable && Boolean(yAxisData?.length) && render_y_axis_ticks_labels()}
                         {y2Axis && Boolean(yAxisData?.length) && render_y2_axis()}
@@ -649,7 +642,7 @@ const StackedBarChart = ({
 const ToolTipPopup = ({ selectedChartItem, onClose, containerStyle, textStyle }) => {
     return (
         <TouchableOpacity style={[styles.toolTipPopup, containerStyle]} onPress={onClose}>
-            <Text style={[styles.toolTipTextStyle, textStyle]}>{selectedChartItem?.value ?? ''}</Text>
+            <Text style={[styles.toolTipTextStyle, textStyle]}>{selectedChartItem?.value?.length > 0 ? selectedChartItem?.value?.join() : selectedChartItem?.value ?? ''}</Text>
         </TouchableOpacity>
     )
 }

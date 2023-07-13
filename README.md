@@ -15,7 +15,7 @@
 - clickable
 - toot tip
   
-<img width="375" alt="Screenshot 2023-07-11 at 10 56 28 PM" src="https://github.com/TanmayaPradhan/charts/assets/40633712/23d0705e-8f8b-4df6-86de-dbaef6635296">
+<img width="369" alt="Screenshot 2023-07-14 at 1 54 19 AM" src="https://github.com/TanmayaPradhan/charts/assets/40633712/92d3fdb4-f5d3-4911-a096-b9a03c67309e">
 
 
 ### Declarative Usage
@@ -34,10 +34,10 @@
             showGrid={false}
             chartType={'linechart'}
             y2Axis={false}
-            chartData={[
-              { month: 'Jan', lineValue: 100 },
-              { month: 'Feb', lineValue: 250 },
-              { month: 'Mar', lineValue: 500 },
+            chartData = {[
+              { month: 'Jan', barValues: [100, 150, 120], lineValue: 125 },
+              { month: 'Feb', barValues: [140, 80, 120], lineValue: 250 },
+              { month: 'Mar', barValues: [70, 150, 90], lineValue: 500 },
             ]}
             showTooltipPopup={false}
             onPressLineItem={(item) => console.log(item)}
