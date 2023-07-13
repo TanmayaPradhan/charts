@@ -57,11 +57,12 @@
 | :-------- | :------- | :-------------------------------- |
 | `containerHeight`      | `integer` | chart height |
 | `containerWidth`      | `integer` | chart width |
-| `chartType`      | `string` | all, barchart, stack_barchart, linechart |
+| `chartType`      | `string` | all, barchart, linechart |
 | `backgroundColor`      | `string` | background color |
 | `axisColor`      | `string` | axis color|
 | `showAxisTicks`      | `boolean` | it shows x, y axis ticks |
-| `showGrid`      | `boolean` | it shows grid |
+| `showGridX`      | `boolean` | it shows x-axis grid |
+| `showGridY`      | `boolean` | it shows y-axis grid |
 | `gridColor`      | `string` | background grid color |
 | `yAxisSubstring`      | `string` | add substring to y axis label |
 | `y2AxisSubstring`      | `string` | add substring to y2 axis label |
@@ -69,15 +70,15 @@
 | `lineColor`      | `string` | line chart color |
 | `circleColor`      | `string` | line chart circle color |
 | `axisFontColor`      | `string` | x,y axis font color |
-| `barchartColor`      | `string` | bar chart color |
-| `stackedSecondaryBarColor`      | `string` | stack bar chart color |
 | `circleRadius`      | `integer` | all circle radius |
 | `axisWidth`      | `integer` | x,y axis width |
 | `axisFontSize`      | `integer` | x,y axis font size |
 | `axisFontFamily`      | `string` | x,y axis font family |
 | `barWidth`      | `integer` | bar chart width |
 | `line_chart_width`      | `integer` | line chart width |
-| `showTooltip`      | `boolean` | show tooltip on the chart |
+| `show_barchart_tooltips`      | `boolean` | show tooltip on the chart |
+| `barchart_tooltip_axis_color`      | `string` | tooltip line color |
+| `barchart_tooltip_color`      | `string` | tooltip color |
 | `showTooltipPopup`      | `boolean` | show tooltip popup on the chart |
 | `toolTipContainerStyle`      | `string` | toolTip container style |
 | `toolTipTextStyle`      | `string` | toolTip text style |
@@ -86,3 +87,4 @@
 | `onPressItem`      | `function` | returns clickable bar chart item |
 | `onPressLineItem`      | `function` | returns clickable line chart item |
 | `chartData`      | `object` | data required to show the chart |
+| `chartColors`      | `array` | data required to show the chart colors |

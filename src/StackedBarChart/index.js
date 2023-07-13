@@ -29,7 +29,8 @@ const StackedBarChart = ({
     backgroundColor = '#000',
     axisColor = '#9cc',
     showAxisTicks = true,
-    showGrid = true,
+    showGridX = false,
+    showGridY = false,
     gridColor = '#EDEDED',
     yAxisSubstring = 'k',
     y2AxisSubstring = '%',
@@ -384,7 +385,33 @@ const StackedBarChart = ({
 
     };
 
-    const renderGrid = () => {
+    const render_grid_x = () => {
+        return chartData?.map((item, index) => {
+            let x_axis_point_test_gap = x_axis_width / chartData?.length
+            let x_point_x_axis_grid = x_axis_x1_point + x_axis_point_test_gap * index;
+            const x_point_x_axis_tick =
+                gap_between_x_axis_ticks +
+                x_axis_x1_point +
+                gap_between_x_axis_ticks * index;
+            const y_point_y_axis_ticks =
+                y_axis_y2_point - gap_between_y_axis_ticks * index;
+            return (
+                <G key={`grid-axis ${index}`}>
+                    <Line
+                        key={`grid-x-axis ${index}`}
+                        x1={x_point_x_axis_tick}
+                        y1={x_axis_y1_point}
+                        x2={x_point_x_axis_tick}
+                        y2={x_axis_y1_point - y_axis_height}
+                        stroke={gridColor}
+                        strokeWidth={1}
+                    // opacity={animated_axis_tick_circle_opacity}
+                    />
+                </G>
+            );
+        });
+    };
+    const render_grid_y = () => {
         return yAxisData?.map((item, index) => {
             let x_axis_point_test_gap = x_axis_width / chartData?.length
             let x_point_x_axis_grid = x_axis_x1_point + x_axis_point_test_gap * index;
@@ -402,16 +429,6 @@ const StackedBarChart = ({
                         y1={y_point_y_axis_ticks}
                         x2={x_axis_x2_point}
                         y2={y_point_y_axis_ticks}
-                        stroke={gridColor}
-                        strokeWidth={1}
-                    // opacity={animated_axis_tick_circle_opacity}
-                    />
-                    <Line
-                        key={`grid-x-axis ${index}`}
-                        x1={x_point_x_axis_tick}
-                        y1={x_axis_y1_point}
-                        x2={x_point_x_axis_tick}
-                        y2={x_axis_y1_point - y_axis_height}
                         stroke={gridColor}
                         strokeWidth={1}
                     // opacity={animated_axis_tick_circle_opacity}
@@ -598,7 +615,8 @@ const StackedBarChart = ({
                     <AnimatedSvg height="100%"
                         width="100%"
                         style={{ backgroundColor: 'transparent' }}>
-                        {showGrid && renderGrid()}
+                        {showGridX && render_grid_x()}
+                        {showGridY && render_grid_y()}
                         {render_x_axis()}
                         {render_x_axis_ticks_labels()}
                         {Boolean(chartType === ChartType.BAR || chartType === ChartType.ALL) && render_barchart()}
