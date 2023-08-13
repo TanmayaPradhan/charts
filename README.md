@@ -11,7 +11,8 @@
 - Bar Chart
 - Stacked Bar chart
 - line chart
-- Combination of Line, Bar, Stack Bar chart
+- multilinechart
+- Combination of Line, Bar, Stack Bar chart, multi line chart
 - clickable
 - toot tip
   
@@ -22,7 +23,7 @@
 ```ruby
     import { View } from 'react-native'
     import React from 'react'
-    import { StackedBarChart } from '@tanmaya_pradhan/react-native-charts'
+    import StackedBarChart,{ChartType} from '@commonUI/charts/StackedBarChart'
     
     const App = () => {
       return (
@@ -30,17 +31,20 @@
           <StackedBarChart
             containerHeight={400}
             backgroundColor='#000'
-            yAxisSubstring='K'
+            yAxisSubstring= ''
+            y2AxisSubstring=''
             showGrid={false}
-            chartType={'linechart'}
-            y2Axis={false}
+            chartType={ChartType.ALL}
+            y2Axis={true}
             chartData = {[
-              { month: 'Jan', barValues: [100, 150, 120], lineValue: 125 },
-              { month: 'Feb', barValues: [140, 80, 120], lineValue: 250 },
-              { month: 'Mar', barValues: [70, 150, 90], lineValue: 500 },
+                { month: 'Jan', barValues: [100, 150, 120], lineValue: 125, multiLineValues: [100, 200] },
+                { month: 'Feb', barValues: [140, 80, 120], lineValue: 250, multiLineValues: [100, 200] },
+                { month: 'Mar', barValues: [70, 150, 90], lineValue: 500, multiLineValues: [100, 200] },
+                { month: 'Apr', barValues: [70, 150, 90], lineValue: 400, multiLineValues: [100, 200] },
             ]}
             showTooltipPopup={false}
             onPressLineItem={(item) => console.log(item)}
+            multiLineChartColors = {['red', 'blue']}
           />
         </View>
       )
@@ -69,6 +73,7 @@
 | `y2Axis`      | `boolean` | it shows another y axis at the right side when both line chart and bar chart data are available |
 | `lineColor`      | `string` | line chart color |
 | `circleColor`      | `string` | line chart circle color |
+| `circleColorHighPriority`      | `boolean` | circle color set as high priority color on line chart |
 | `axisFontColor`      | `string` | x,y axis font color |
 | `circleRadius`      | `integer` | all circle radius |
 | `axisWidth`      | `integer` | x,y axis width |
@@ -88,3 +93,4 @@
 | `onPressLineItem`      | `function` | returns clickable line chart item |
 | `chartData`      | `object` | data required to show the chart |
 | `chartColors`      | `array` | data required to show the chart colors |
+| `multiLineChartColors`      | `array` | data required to show the lien chart colors |

@@ -21,7 +21,8 @@ const AnimatedPath = Animated.createAnimatedComponent(Path);
 export const ChartType = {
     ALL: 'all',
     BAR: 'barchart',
-    LINE: 'linechart'
+    LINE: 'linechart',
+    MULTILINE: 'multilinechart'
 }
 const StackedBarChart = ({
     containerHeight = 400,
@@ -36,6 +37,7 @@ const StackedBarChart = ({
     y2AxisSubstring = '%',
     y2Axis = true, // if only single chart. set to false
     circleColor = '#DAA520',
+    circleColorHighPriority = false,
     axisFontColor = '#fff',
     chartType = ChartType.ALL,
     lineColor = '#DAA520',
@@ -56,11 +58,13 @@ const StackedBarChart = ({
     onPressLineItem = (item) => { }, //set showTooltipPopup to false
     y_axis_label_count = 6,
     chartData = [
-        { month: 'Jan', barValues: [100, 150, 120], lineValue: 125 },
-        { month: 'Feb', barValues: [140, 80, 120], lineValue: 250 },
-        { month: 'Mar', barValues: [70, 150, 90], lineValue: 500 },
+        { month: 'Jan', barValues: [100, 150, 120], lineValue: 125, multiLineValues: [100, 200] },
+        { month: 'Feb', barValues: [140, 80, 120], lineValue: 250, multiLineValues: [100, 200] },
+        { month: 'Mar', barValues: [70, 150, 90], lineValue: 500, multiLineValues: [100, 200] },
+        { month: 'Apr', barValues: [70, 150, 90], lineValue: 400, multiLineValues: [100, 200] },
     ],
-    chartColors = ['#73ff00', '#9ff', '#f99', '#999']
+    chartColors = ['#905f00', '#9ff', '#f99', '#999'],
+    multiLineChartColors = chartColors
 }) => {
     const marginLeft_for_y_axis = 50;
     const marginRight_for_y2_axis = 30;
@@ -104,20 +108,54 @@ const StackedBarChart = ({
     const [selectedChartItem, setSelectedChartItem] = useState({})
 
     const minValue = 0;
-    let allBarValues = chartData.map((item) => item.barValues)
-    const newSumOfMaxValues = allBarValues.map((item) => item.reduce((sum, item) => sum + item), 0)
-    let maxValue = Math.max.apply(
-        Math,
-        newSumOfMaxValues?.map((item) => item),
-    );
+    let maxValue = 0;
+    let y2maxValue = 0;
+    let x_axis_wiseMultiLineValues = []
 
-    const y2maxValue = Math.max.apply(
-        Math,
-        chartData?.map((item) => item.lineValue),
-    );
+    if (chartType === ChartType.LINE) {
+        maxValue = Math.max.apply(
+            Math,
+            chartData?.map((item) => item.lineValue),
+        );
+    }
+    else if (chartType === ChartType.MULTILINE) {
+        let allLineValues = chartData.map((item) => item.multiLineValues)
+        const maxRow = allLineValues.map(function (row) { return Math.max.apply(Math, row); });
+        maxValue = Math.max.apply(
+            Math,
+            maxRow?.map((item) => item),
+        );
+    }
+    else {
+        let allBarValues = chartData.map((item) => item.barValues)
+        const newSumOfMaxValues = allBarValues.map((item) => item.reduce((sum, item) => sum + item), 0)
+        maxValue = Math.max.apply(
+            Math,
+            newSumOfMaxValues?.map((item) => item),
+        );
+    }
+    const numberOfLinesInMultilineChart = chartData?.length > 1 ? chartData[0]?.multiLineValues?.length : 0
+    if (numberOfLinesInMultilineChart && (chartType === ChartType.ALL || chartType === ChartType.MULTILINE)) {
+        x_axis_wiseMultiLineValues = Array.from({ length: numberOfLinesInMultilineChart })?.map((_, index) => {
+            return chartData?.map((item => item?.multiLineValues[index]))
+        })
+        const maxRow = x_axis_wiseMultiLineValues.map(function (row) { return Math.max.apply(Math, row); });
+        y2maxValue = Math.max.apply(
+            Math,
+            maxRow?.map((item) => item),
+        );
+    }
+    else {
+        y2maxValue = Math.max.apply(
+            Math,
+            chartData?.map((item) => item.lineValue),
+        );
+    }
+
     const gapBetweenYaxisValues = (maxValue - minValue) / (y_axis_label_count - 2);
     const gapBetweenY2axisValues = (y2maxValue - minValue) / (y_axis_label_count - 2);
     let gap_between_y_axis_ticks = y_axis_height / (y_axis_label_count - 1);
+
 
     const animated_axis_tick_circle_opacity = useRef(
         new Animated.Value(0),
@@ -130,7 +168,6 @@ const StackedBarChart = ({
     ).current;
     const animatedPathLength = useRef(new Animated.Value(0)).current;
     const animatedPathOpacity = useRef(new Animated.Value(0)).current;
-
 
     useEffect(() => {
         const newLabels = Array.from({ length: y_axis_label_count }).map(
@@ -211,6 +248,20 @@ const StackedBarChart = ({
         }
         else {
             onPressLineItem(item)
+        }
+    }
+    const onPressMultiLinechartItem = (item, monthIndex) => {
+        const obj = {
+            month: chartData[monthIndex]?.month ?? '',
+            value: item
+        }
+        if (showTooltipPopup) {
+            setSelectedChartItem(obj)
+            setIsTooltipPopupVisible(true)
+            console.log(obj)
+        }
+        else {
+            onPressLineItem(obj)
         }
     }
 
@@ -386,7 +437,7 @@ const StackedBarChart = ({
     };
 
     const render_grid_x = () => {
-        return chartData?.map((item, index) => {
+        return Array.from({ length: chartData?.length + 1 })?.map((item, index) => {
             let x_axis_point_test_gap = x_axis_width / chartData?.length
             let x_point_x_axis_grid = x_axis_x1_point + x_axis_point_test_gap * index;
             const x_point_x_axis_tick =
@@ -605,13 +656,101 @@ const StackedBarChart = ({
         );
     };
 
+    const getMultiLineDPath = ({ lineDataList = [] }) => {
+        let dPath = '';
+        const minMaxGap = y2maxValue - minValue;
+        const gapBetweenYvalues = minMaxGap / 4;
+
+        const highestValueAtYAxis = y2AxisData[y2AxisData.length - 1];
+        if (highestValueAtYAxis) {
+            lineDataList.map((item, index) => {
+                let x_point_x_axis_tick =
+                    gap_between_x_axis_ticks +
+                    x_axis_x1_point +
+                    gap_between_x_axis_ticks * index;
+                let xPoint = x_point_x_axis_tick;
+                let yPoint =
+                    (gap_between_y_axis_ticks / gapBetweenYvalues) *
+                    (highestValueAtYAxis - item) +
+                    padding_from_screen;
+                if (index === 0) {
+                    dPath += `M${xPoint} ${yPoint}`;
+                } else {
+                    dPath += ` L${xPoint} ${yPoint}`;
+                }
+            });
+        }
+        return dPath;
+    };
+    const render_multiline_chart = () => {
+        return (
+            <G key={'multi line chart'}>
+                {
+                    x_axis_wiseMultiLineValues?.map((singleLine, index) => {
+                        const dPath = getMultiLineDPath({ lineDataList: singleLine });
+                        return (<AnimatedPath
+                            key={`multi line chart path${index}`}
+                            // ref={line_chart_ref}
+                            d={dPath}
+                            // onLayout={() => setPathLength(line_chart_ref?.current.getTotalLength())}
+                            stroke={multiLineChartColors[index] || lineColor}
+                            strokeWidth={line_chart_width}
+                            strokeDasharray={pathLength}
+                            strokeDashoffset={animatedPathLength}
+                            opacity={animatedPathOpacity}
+                            fill="transparent"
+                        />)
+
+                    })
+                }
+
+            </G>
+        );
+    };
+
+    const render_multiline_chart_circles = () => {
+        const minMaxGap = y2maxValue - minValue;
+        const gapBetweenYvalues = minMaxGap / 4;
+        const highestValueAtYAxis = y2AxisData[y2AxisData.length - 1];
+        return (
+            <G key={'multi line chart circle'}>
+                {
+                    x_axis_wiseMultiLineValues?.map((singleLine, parentIndex) => {
+                        return singleLine.map((item, x_axis_wise_index) => {
+                            const x_point_x_axis_tick =
+                                gap_between_x_axis_ticks +
+                                x_axis_x1_point +
+                                gap_between_x_axis_ticks * x_axis_wise_index;
+                            let y_point =
+                                (gap_between_y_axis_ticks / gapBetweenYvalues) *
+                                (highestValueAtYAxis - item) +
+                                padding_from_screen;
+                            return (
+                                <Circle
+                                    key={`multi line chart value circle${x_axis_wise_index}`}
+                                    cx={x_point_x_axis_tick}
+                                    cy={y_point}
+                                    r={circleRadius}
+                                    fill={circleColorHighPriority ? circleColor : multiLineChartColors[parentIndex] || circleColor}
+                                    opacity={1}
+                                    onPress={() => onPressMultiLinechartItem(item, x_axis_wise_index)}
+                                />
+                            );
+                        });
+
+                    })
+                }
+            </G>
+        );
+    };
+
     return (
         <View style={[styles.container, { height: containerHeight, backgroundColor: backgroundColor }]}>
             <ScrollView
                 horizontal={scrollEnable}
                 scrollEnabled={scrollEnable}
                 contentContainerStyle={{ flexGrow: 1 }}>
-                <View style={{ height: containerHeight, width: scrollWidth }}>
+                <View style={{ height: containerHeight, width: scrollWidth + gap_between_x_axis_ticks }}>
                     <AnimatedSvg height="100%"
                         width="100%"
                         style={{ backgroundColor: 'transparent' }}>
@@ -625,8 +764,10 @@ const StackedBarChart = ({
                         {!scrollEnable && Boolean(yAxisData?.length) && render_y_axis_ticks_labels()}
                         {y2Axis && Boolean(yAxisData?.length) && render_y2_axis()}
                         {y2Axis && Boolean(yAxisData?.length) && render_y2_axis_ticks_labels()}
-                        {Boolean(chartType === ChartType.LINE || chartType === ChartType.ALL) && Boolean(yAxisData?.length) && render_line_chart()}
-                        {Boolean(chartType === ChartType.LINE || chartType === ChartType.ALL) && Boolean(yAxisData?.length) && render_line_chart_circles()}
+                        {Boolean(chartType === ChartType.LINE || chartType === ChartType.ALL) && !numberOfLinesInMultilineChart && Boolean(yAxisData?.length) && render_line_chart()}
+                        {Boolean(chartType === ChartType.LINE || chartType === ChartType.ALL) && !numberOfLinesInMultilineChart && Boolean(yAxisData?.length) && render_line_chart_circles()}
+                        {Boolean(chartType === ChartType.MULTILINE || chartType === ChartType.ALL) && numberOfLinesInMultilineChart && Boolean(yAxisData?.length) && render_multiline_chart()}
+                        {Boolean(chartType === ChartType.MULTILINE || chartType === ChartType.ALL) && numberOfLinesInMultilineChart && Boolean(yAxisData?.length) && render_multiline_chart_circles()}
                     </AnimatedSvg>
                 </View>
             </ScrollView>
