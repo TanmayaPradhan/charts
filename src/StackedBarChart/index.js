@@ -58,12 +58,12 @@ const StackedBarChart = ({
     onPressLineItem = (item) => { }, //set showTooltipPopup to false
     y_axis_label_count = 6,
     chartData = [
-        { month: 'Jan', barValues: [100, 150, 120], lineValue: 125, multiLineValues: [100, 200] },
-        { month: 'Feb', barValues: [140, 80, 120], lineValue: 250, multiLineValues: [100, 200] },
-        { month: 'Mar', barValues: [70, 150, 90], lineValue: 500, multiLineValues: [100, 200] },
-        { month: 'Apr', barValues: [70, 150, 90], lineValue: 400, multiLineValues: [100, 200] },
+        { month: 'Jan', barValues: [100, 120], lineValue: 125, multiLineValues: [125, 120] },
+        { month: 'Feb', barValues: [140, 210], lineValue: 250, multiLineValues: [250, 140] },
+        { month: 'Mar', barValues: [70, 100], lineValue: 300, multiLineValues: [300, 90] },
+        { month: 'Apr', barValues: [70, 90], lineValue: 350, multiLineValues: [40, 100] },
     ],
-    chartColors = ['#905f00', '#9ff', '#f99', '#999'],
+    chartColors = ['#f90', '#9c9', '#f99', '#999'],
     multiLineChartColors = chartColors
 }) => {
     const marginLeft_for_y_axis = 50;

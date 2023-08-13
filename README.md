@@ -16,14 +16,14 @@
 - clickable
 - toot tip
   
-<img width="369" alt="Screenshot 2023-07-14 at 1 54 19 AM" src="https://github.com/TanmayaPradhan/charts/assets/40633712/92d3fdb4-f5d3-4911-a096-b9a03c67309e">
+<img width="352" alt="Screenshot 2023-08-13 at 2 15 32 PM" src="https://github.com/TanmayaPradhan/charts/assets/40633712/e9e9a116-6d8a-4d8d-86fd-1f861d6d2d11">
 
 
 ### Declarative Usage
 ```ruby
     import { View } from 'react-native'
     import React from 'react'
-    import StackedBarChart,{ChartType} from '@commonUI/charts/StackedBarChart'
+    import StackedBarChart,{ChartType} from '@tanmaya_pradhan/react-native-charts'
     
     const App = () => {
       return (

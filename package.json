@@ -1,7 +1,7 @@
 {
   "name": "@tanmaya_pradhan/react-native-charts",
-  "version": "0.0.7",
-  "description": "svg charts",
+  "version": "0.0.8",
+  "description": "react native svg charts",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
