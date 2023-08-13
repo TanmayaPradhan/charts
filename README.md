@@ -23,7 +23,7 @@
 ```ruby
     import { View } from 'react-native'
     import React from 'react'
-    import StackedBarChart,{ChartType} from '@tanmaya_pradhan/react-native-charts'
+    import { StackedBarChart,ChartType } from '@tanmaya_pradhan/react-native-charts'
     
     const App = () => {
       return (
