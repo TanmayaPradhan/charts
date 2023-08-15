@@ -33,14 +33,15 @@
             backgroundColor='#000'
             yAxisSubstring= ''
             y2AxisSubstring=''
-            showGrid={false}
+            showGridX={true}
+            showGridY={true}
             chartType={ChartType.ALL}
             y2Axis={true}
             chartData = {[
-                { month: 'Jan', barValues: [100, 150, 120], lineValue: 125, multiLineValues: [100, 200] },
-                { month: 'Feb', barValues: [140, 80, 120], lineValue: 250, multiLineValues: [100, 200] },
-                { month: 'Mar', barValues: [70, 150, 90], lineValue: 500, multiLineValues: [100, 200] },
-                { month: 'Apr', barValues: [70, 150, 90], lineValue: 400, multiLineValues: [100, 200] },
+                { month: 'Jan', barValues: [100, 150, 120], multiLineValues: [100, 200] },
+                { month: 'Feb', barValues: [140, 80, 120], multiLineValues: [100, 200] },
+                { month: 'Mar', barValues: [70, 150, 90], multiLineValues: [100, 200] },
+                { month: 'Apr', barValues: [70, 150, 90], multiLineValues: [100, 200] },
             ]}
             showTooltipPopup={false}
             onPressLineItem={(item) => console.log(item)}
@@ -61,7 +62,7 @@
 | :-------- | :------- | :-------------------------------- |
 | `containerHeight`      | `integer` | chart height |
 | `containerWidth`      | `integer` | chart width |
-| `chartType`      | `string` | all, barchart, linechart |
+| `chartType`      | `string` | all, barchart, linechart, multilinechart |
 | `backgroundColor`      | `string` | background color |
 | `axisColor`      | `string` | axis color|
 | `showAxisTicks`      | `boolean` | it shows x, y axis ticks |
